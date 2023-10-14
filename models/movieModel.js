@@ -22,20 +22,6 @@ const getMovieById = async (id) => {
         throw error;
     }
 };
-
-// router.get('/', auth, function (req, res) {
-//     pool.query(
-//       `SELECT * FROM movies ${
-//         req.query.limit ? 'LIMIT ' + req.query.limit : ''
-//       } `,
-//       (error, results) => {
-//         if (error) {
-//           throw error;
-//         }
-//         res.json(results.rows);
-//       }
-//     );
-//   });
   
 // post
 const addMovie = async (id, title, genres, year) => {
@@ -55,23 +41,6 @@ const addMovie = async (id, title, genres, year) => {
     }
 };
 
-
-//   router.post('/', function (req, res) {
-//     //   console.log(req.body);
-//     pool.query(
-//       `INSERT INTO movies ("title", "genres", "year") VALUES ($1, $2, $3);`,
-//       [req.body.title, req.body.genres, req.body.year],
-//       (error, results) => {
-//         if (error) {
-//           throw error;
-//         }
-//         res.status(201).json({
-//           status: 'success',
-//         });
-//       }
-//     );
-//   });
-
 // delete
 const deleteMovie = async (id) => {
     try {
@@ -81,21 +50,6 @@ const deleteMovie = async (id) => {
         throw error;
     }
 };
-
-//   router.delete('/:id', function (req, res) {
-//     //   console.log(req.body);
-//     pool.query(
-//       `DELETE FROM movies WHERE id = ${req.params.id}`,
-//       (error, results) => {
-//         if (error) {
-//           throw error;
-//         }
-//         res.status(201).json({
-//           status: 'success',
-//         });
-//       }
-//     );
-//   });
 
 // put
 const updateMovie = async (year, id) => {
@@ -107,21 +61,6 @@ const updateMovie = async (year, id) => {
         throw error;
     }
 };
-  
-//   router.put('/:id', function (req, res) {
-//     //   console.log(req.body);
-//     pool.query(
-//       `UPDATE movies SET year = "${req.body.year}" WHERE id = ${req.params.id}`,
-//       (error, results) => {
-//         if (error) {
-//           throw error;
-//         }
-//         res.status(201).json({
-//           status: 'success',
-//         });
-//       }
-//     );
-//   });
   
 
 module.exports = {getAllMovie, getMovieById, addMovie, deleteMovie, updateMovie};
