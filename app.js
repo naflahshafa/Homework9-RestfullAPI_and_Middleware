@@ -1,14 +1,13 @@
 const express = require('express');
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8008;
 const pool = require('./config/dbconfig');
 const router = require('./routes/index');
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
-const errorHandler = require('./middleware/errorHandling');
+// const errorHandling = require('./middleware/errorHandling');
 
-require("dotenv")
-  .config();
+require("dotenv").config();
 
 // parse requests of content-type - application/json
 app.use(express.json());
@@ -27,7 +26,7 @@ app.use(morgan('common'));
 //   skip: function (req, res) { return res.statusCode < 400 }
 // }));
 
-app.use(errorHandler);
+// app.use(errorHandling)
 
 // Swagger
 const swaggerJsdoc = require('swagger-jsdoc');
@@ -43,23 +42,28 @@ const options = {
     },
     servers: [
       {
-        url: 'http://localhost:3000',
+        url: 'http://localhost:8008',
       },
     ],
   },
   apis: ['./routes/*'],
 };
 
+// Testing
+app.get('/', (req, res) => {
+  res.json({message: 'Hello from API'})
+})
+
 const specs = swaggerJsdoc(options);
 app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(specs));
 
-
+// Checking database connection
 pool.connect((err, res) => {
     console.log(err);
     console.log('Connected');
 });
 
-
+// Starting server and info about server's port
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`)
 });

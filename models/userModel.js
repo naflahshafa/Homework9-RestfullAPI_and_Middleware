@@ -1,25 +1,9 @@
 const pool = require('../config/dbconfig'); // Import koneksi database (dbconfig.js)
 
 
-const createUserTable = `
-    CREATE TABLE IF NOT EXISTS users (
-        id INTEGER,
-        email VARCHAR(50) NOT NULL,
-        gender VARCHAR(50),
-        password VARCHAR(50) NOT NULL,
-        role VARCHAR(50) 
-    )
-`;
-
-pool.query(createUserTable, (err, res) => {
-    if (err) {
-        console.error(err);
-    }
-});
-
-const getUserByEmail = async (email) => {
-    const query = 'SELECT * FROM users WHERE email = $1';
-    const values = [email];
+const getUserByEmailId = async (id, email) => {
+    const query = 'SELECT * FROM users WHERE id = $1 OR email = $2';
+    const values = [id, email];
 
     try {
         const { rows } = await pool.query(query, values);
@@ -30,95 +14,45 @@ const getUserByEmail = async (email) => {
 };
 
 const createUser = async (id, email, gender, password, role) => {
-  const query = 'INSERT INTO users (id, email, gender, password, role) VALUES ($1, $2, $3, $4, $5)';
-  const values = [id, email, gender, password, role];
+    try {
+        // Mengecek apakah id atau email user sudah terdaftar atau ada dalam database
+        const checkResult = await pool.query('SELECT * FROM users WHERE id = $1 OR email = $2', [id, email]);
 
-  try {
-      await pool.query(query, values);
-  } catch (error) {
-      throw error;
-  }
+        if (checkResult.rowCount > 0) {
+            return { success: false, message: 'User with the same ID or email already exists!' };
+        }
+
+        // Jika id atau email belum ada, lakukan penambahan data baru (registerasi)
+        const insertResult = await pool.query(
+            'INSERT INTO users (id, email, gender, password, role) VALUES ($1, $2, $3, $4, $5)',
+            [id, email, gender, password, role]
+        );
+        const newUser = insertResult.rows[0];
+
+        if (insertResult.rowCount > 0) {
+            return { success: true, user: newUser, message: 'User is registered successfully!' };
+        } else {
+            return { success: false, message: 'Failed to register!' };
+        }
+    } catch (error) {
+        throw error;
+    };
 };
 
-module.exports = {getUserByEmail, createUser};
+const loginUser = async (email, password) => {
+    try {
+        const result = await pool.query('SELECT * FROM users WHERE email = $1 AND password = $2', [email, password]);
+        const user = result.rows[0];
+        console.log('User:', user);
 
+        if (user) {
+            return { success: true, user: user, message: 'User successfully login!' };
+        } else {
+            return { success: false, message: 'Failed to login!' };
+        }
+    } catch (error) {
+        throw error;
+    };
+};
 
-
-
-// const { Sequelize, DataTypes } = require('sequelize');
-// const sequelize = new Sequelize({
-//   dialect: 'postgres',
-//   username: 'postgres',
-//   password: 'postgres',
-//   host: 'localhost',
-//   database: 'movies_database',
-// });
-
-// const User = sequelize.define('users', {
-//   id: {
-//     type: DataTypes.INTEGER,
-//     unique: true,
-//     primaryKey: true,
-//     allowNull: false,
-//   },
-//   email: {
-//     type: DataTypes.STRING,
-//     allowNull: false,
-//     validate: {
-//       isEmail: true,
-//     },
-//   },
-//   gender: {
-//     type: DataTypes.STRING,
-//     allowNull: false,
-//   },
-//   password: {
-//     type: DataTypes.STRING,
-//     allowNull: false,
-//   },
-//   role: {
-//     type: DataTypes.STRING,
-//     allowNull: false,
-//   },
-// });
-
-// (async () => {
-//   await sequelize.sync(); // Membuat tabel User jika belum ada
-//   console.log('Tabel users telah dibuat atau sudah ada.');
-// })();
-
-// module.exports = User;
-
-
-
-// // get
-// const getAllUser = async () => {
-//     try {
-//         const result = await pool.query('SELECT * FROM users ORDER BY id ASC');
-//         return result.rows;
-//     } catch (error) {
-//         throw error;
-//     }
-// };
-
-// const getUserById = async (id) => {
-//     try {
-//         const result = await pool.query('SELECT * FROM users WHERE id = $1', [id]);
-//         return result.rows;
-//     } catch (error) {
-//         throw error;
-//     }
-// };
-
-// // post
-// const loginUser = async (email, password) => {
-//     try {
-//         const result = await pool.query('SELECT * FROM users WHERE email = $1 AND password = $2', [email, password]);
-//         return result;
-//     } catch (error) {
-//         throw error;
-//     }
-// };
-
-
-// module.exports = {getAllUser, getUserById, loginUser};
+module.exports = {getUserByEmailId, createUser, loginUser};

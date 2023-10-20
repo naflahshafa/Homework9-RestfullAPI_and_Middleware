@@ -1,4 +1,4 @@
-function errorHandler(err, req, res, next) {
+function errorHandling(err, req, res, next) {
     console.error(err.stack);
 
     // Tangani kesalahan-kesalahan tertentu
@@ -10,4 +10,4 @@ function errorHandler(err, req, res, next) {
     }
 }
 
-module.exports = errorHandler;
+module.exports = {errorHandling};

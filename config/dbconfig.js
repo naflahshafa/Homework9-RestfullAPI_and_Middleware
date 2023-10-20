@@ -1,5 +1,5 @@
 // const {DB_USER, HOST, NAME, PASSWORD, PORT} = process.env;
-// const Pool = require('pg').Pool;
+// const {Pool} = require('pg');
 // const pool = new Pool({
 //     user: DB_USER,
 //     host: HOST,

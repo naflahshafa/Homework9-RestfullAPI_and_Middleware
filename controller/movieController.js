@@ -1,10 +1,10 @@
 const movieModel = require('../models/movieModel'); // Import model (movieModel.js)
 
 
-const getAllMovie = async (request, response) => {
+const getAllMovies = async (request, response) => {
     const page = parseInt(request.params.page);
     try {
-        const movies = await movieModel.getAllMovie(page);
+        const movies = await movieModel.getAllMovies(page);
         response.status(200).json(movies);
     } catch (err) {
         response.status(500).json({ error: 'Internal Server Error' });
@@ -54,5 +54,5 @@ const updateMovie = async (request, response) => {
     }
 };
 
-module.exports = {getAllMovie, getMovieById, addMovie, deleteMovie, updateMovie};
+module.exports = {getAllMovies, getMovieById, addMovie, deleteMovie, updateMovie};
 
